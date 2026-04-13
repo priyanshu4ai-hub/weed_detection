@@ -13,13 +13,21 @@ STATIC_FOLDER = "static"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-# ===== LOAD MODEL =====
+# ===== MODEL PATH =====
 MODEL_PATH = os.path.join(os.getcwd(), "weed_model_v1.pt")
 
 if not os.path.exists(MODEL_PATH):
-    raise Exception("❌ Model file not found! Make sure weed_model_v1.pt is in project root.")
+    raise Exception("❌ Model file not found! Upload weed_model_v1.pt")
 
-model = YOLO(MODEL_PATH)
+# ===== LOAD MODEL LAZY (IMPORTANT FIX) =====
+model = None
+
+def load_model():
+    global model
+    if model is None:
+        print("🚀 Loading YOLO model...")
+        model = YOLO(MODEL_PATH)
+
 
 # ===== ROUTES =====
 @app.route("/")
@@ -30,6 +38,9 @@ def index():
 @app.route("/detect", methods=["POST"])
 def detect():
     try:
+        # 🔥 Load model only when needed
+        load_model()
+
         if "image" not in request.files:
             return jsonify({"error": "No image provided"}), 400
 
@@ -50,7 +61,7 @@ def detect():
         # ===== RUN MODEL =====
         results = model(filepath)
 
-        # ===== SAVE OUTPUT IMAGE =====
+        # ===== SAVE OUTPUT =====
         out_filename = f"result_{filename}"
         result_path = os.path.join(STATIC_FOLDER, out_filename)
 
@@ -81,7 +92,7 @@ def detect():
         })
 
     except Exception as e:
-        print("ERROR:", str(e))
+        print("❌ ERROR:", str(e))
         return jsonify({"error": str(e)}), 500
 
 
