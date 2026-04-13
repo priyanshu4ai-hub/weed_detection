@@ -19,7 +19,7 @@ MODEL_PATH = os.path.join(os.getcwd(), "weed_model_v1.pt")
 if not os.path.exists(MODEL_PATH):
     raise Exception("❌ Model file not found! Upload weed_model_v1.pt")
 
-# ===== LOAD MODEL LAZY (IMPORTANT FIX) =====
+# ===== LAZY LOAD MODEL (IMPORTANT FOR RENDER) =====
 model = None
 
 def load_model():
@@ -27,7 +27,6 @@ def load_model():
     if model is None:
         print("🚀 Loading YOLO model...")
         model = YOLO(MODEL_PATH)
-
 
 # ===== ROUTES =====
 @app.route("/")
@@ -96,6 +95,7 @@ def detect():
         return jsonify({"error": str(e)}), 500
 
 
-# ===== RUN APP =====
+# ===== RUN APP (RENDER FIX) =====
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
