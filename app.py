@@ -15,15 +15,23 @@ MODEL_PATH = "weed_model_v1.pt"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-# ===== GOOGLE DRIVE MODEL DOWNLOAD =====
+# ===== GOOGLE DRIVE MODEL =====
 MODEL_URL = "https://drive.google.com/uc?id=1CgthuUyWPBzPpw-G0TkxH2SKzxUJRWzE"
 
+# Download only once
 if not os.path.exists(MODEL_PATH):
-    print("⬇️ Downloading model from Google Drive...")
+    print("⬇️ Downloading model...")
     gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
 
-# ===== LOAD MODEL =====
-model = YOLO(MODEL_PATH)
+# ===== LAZY LOAD MODEL =====
+model = None
+
+def load_model():
+    global model
+    if model is None:
+        print("🚀 Loading YOLO model...")
+        model = YOLO(MODEL_PATH)
+
 
 # ===== ROUTES =====
 @app.route("/")
@@ -34,6 +42,9 @@ def index():
 @app.route("/detect", methods=["POST"])
 def detect():
     try:
+        # Load model only when needed
+        load_model()
+
         if "image" not in request.files:
             return jsonify({"error": "No image provided"}), 400
 
@@ -54,9 +65,9 @@ def detect():
         # ===== RUN MODEL (OPTIMIZED) =====
         results = model(filepath, imgsz=320, device="cpu")
 
-        # ===== SAVE RESULT =====
+        # ===== SAVE RESULT IMAGE =====
         out_filename = f"result_{filename}"
-        result_path = os.path.join(os.getcwd(), STATIC_FOLDER, out_filename)
+        result_path = os.path.join(STATIC_FOLDER, out_filename)
 
         annotated = results[0].plot()
 
@@ -79,7 +90,8 @@ def detect():
 
         return jsonify({
             "detections": detections,
-            "result_image": f"/static/{out_filename}"
+            "total": len(detections),
+            "result_image": f"/static/{out_filename}"   # 🔥 FIXED PATH
         })
 
     except Exception as e:
