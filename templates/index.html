@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeedSense AI — Smart Weed Detection</title>
-    <meta name="description" content="AI-powered weed detection system. Upload images or use your camera to detect and identify weeds in real-time.">
+    <meta name="description"
+        content="AI-powered weed detection system. Upload images or use your camera to detect and identify weeds in real-time.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
             --bg-start: #050d1f;
@@ -42,18 +51,49 @@
             z-index: 0;
             overflow: hidden;
         }
+
         .orb {
             position: absolute;
             border-radius: 50%;
             filter: blur(80px);
             animation: orbFloat 12s ease-in-out infinite alternate;
         }
-        .orb-1 { width: 500px; height: 500px; background: rgba(0, 212, 255, 0.08); top: -10%; left: -5%; animation-delay: 0s; }
-        .orb-2 { width: 400px; height: 400px; background: rgba(26, 111, 255, 0.10); bottom: -10%; right: -5%; animation-delay: -4s; }
-        .orb-3 { width: 300px; height: 300px; background: rgba(0, 230, 118, 0.06); top: 40%; left: 50%; animation-delay: -8s; }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: rgba(0, 212, 255, 0.08);
+            top: -10%;
+            left: -5%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(26, 111, 255, 0.10);
+            bottom: -10%;
+            right: -5%;
+            animation-delay: -4s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(0, 230, 118, 0.06);
+            top: 40%;
+            left: 50%;
+            animation-delay: -8s;
+        }
+
         @keyframes orbFloat {
-            from { transform: translateY(0) scale(1); }
-            to   { transform: translateY(-40px) scale(1.06); }
+            from {
+                transform: translateY(0) scale(1);
+            }
+
+            to {
+                transform: translateY(-40px) scale(1.06);
+            }
         }
 
         /* ---- Main Layout ---- */
@@ -70,6 +110,7 @@
             text-align: center;
             margin-bottom: 48px;
         }
+
         .logo-icon {
             width: 72px;
             height: 72px;
@@ -80,13 +121,22 @@
             align-items: center;
             justify-content: center;
             font-size: 32px;
-            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.35), 0 0 0 1px rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
             animation: pulseLogo 3s ease-in-out infinite;
         }
+
         @keyframes pulseLogo {
-            0%, 100% { box-shadow: 0 8px 32px rgba(0, 212, 255, 0.35), 0 0 0 1px rgba(255,255,255,0.1); }
-            50% { box-shadow: 0 12px 48px rgba(0, 212, 255, 0.55), 0 0 0 1px rgba(255,255,255,0.15); }
+
+            0%,
+            100% {
+                box-shadow: 0 8px 32px rgba(0, 212, 255, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 12px 48px rgba(0, 212, 255, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.15);
+            }
         }
+
         .header h1 {
             font-size: clamp(2rem, 5vw, 3rem);
             font-weight: 800;
@@ -97,6 +147,7 @@
             background-clip: text;
             margin-bottom: 10px;
         }
+
         .header p {
             color: var(--text-secondary);
             font-size: 1.05rem;
@@ -115,6 +166,7 @@
             margin-bottom: 28px;
             backdrop-filter: blur(16px);
         }
+
         .tab-btn {
             flex: 1;
             display: flex;
@@ -132,16 +184,21 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .tab-btn.active {
             background: linear-gradient(135deg, var(--accent-blue), #0052cc);
             color: #fff;
             box-shadow: 0 4px 20px rgba(26, 111, 255, 0.5);
         }
+
         .tab-btn:not(.active):hover {
             background: var(--glass-hover);
             color: var(--text-primary);
         }
-        .tab-icon { font-size: 1.1rem; }
+
+        .tab-icon {
+            font-size: 1.1rem;
+        }
 
         /* ---- Glass Card ---- */
         .glass-card {
@@ -152,15 +209,23 @@
             padding: 32px;
             transition: border-color 0.3s;
         }
-        .glass-card:hover { border-color: rgba(255,255,255,0.18); }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+        }
 
         /* ---- Mode Panels ---- */
-        .mode-panel { display: none; }
-        .mode-panel.active { display: block; }
+        .mode-panel {
+            display: none;
+        }
+
+        .mode-panel.active {
+            display: block;
+        }
 
         /* ---- Upload Zone ---- */
         .upload-zone {
-            border: 2px dashed rgba(255,255,255,0.18);
+            border: 2px dashed rgba(255, 255, 255, 0.18);
             border-radius: 18px;
             padding: 48px 24px;
             text-align: center;
@@ -169,39 +234,53 @@
             position: relative;
             overflow: hidden;
         }
+
         .upload-zone::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(26,111,255,0.04), rgba(0,212,255,0.04));
+            background: linear-gradient(135deg, rgba(26, 111, 255, 0.04), rgba(0, 212, 255, 0.04));
             opacity: 0;
             transition: opacity 0.3s;
         }
+
         .upload-zone:hover::before,
-        .upload-zone.dragover::before { opacity: 1; }
+        .upload-zone.dragover::before {
+            opacity: 1;
+        }
+
         .upload-zone:hover,
         .upload-zone.dragover {
             border-color: var(--accent-teal);
             box-shadow: 0 0 30px rgba(0, 212, 255, 0.15);
         }
-        .upload-zone.dragover { transform: scale(1.01); }
+
+        .upload-zone.dragover {
+            transform: scale(1.01);
+        }
+
         .upload-icon {
             font-size: 3rem;
             margin-bottom: 16px;
             display: block;
-            filter: drop-shadow(0 0 12px rgba(0,212,255,0.4));
+            filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.4));
         }
+
         .upload-zone h3 {
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 8px;
         }
+
         .upload-zone p {
             color: var(--text-secondary);
             font-size: 0.9rem;
             margin-bottom: 20px;
         }
-        #fileInput { display: none; }
+
+        #fileInput {
+            display: none;
+        }
 
         /* ---- Buttons ---- */
         .btn {
@@ -218,42 +297,51 @@
             transition: all 0.3s;
             text-decoration: none;
         }
+
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-blue), #006aff);
             color: #fff;
             box-shadow: 0 4px 20px rgba(26, 111, 255, 0.45);
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(26, 111, 255, 0.6);
         }
+
         .btn-success {
             background: linear-gradient(135deg, #00c853, var(--accent-green));
             color: #fff;
             box-shadow: 0 4px 20px rgba(0, 230, 118, 0.45);
         }
+
         .btn-success:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0, 230, 118, 0.55);
         }
+
         .btn-danger {
             background: linear-gradient(135deg, #d32f2f, #f44336);
             color: #fff;
             box-shadow: 0 4px 20px rgba(244, 67, 54, 0.4);
         }
+
         .btn-danger:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(244, 67, 54, 0.55);
         }
+
         .btn-ghost {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             color: var(--text-primary);
         }
+
         .btn-ghost:hover {
             background: var(--glass-hover);
             transform: translateY(-1px);
         }
+
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -265,7 +353,11 @@
             margin-top: 24px;
             display: none;
         }
-        .preview-wrap.show { display: block; }
+
+        .preview-wrap.show {
+            display: block;
+        }
+
         .preview-label {
             font-size: 0.82rem;
             font-weight: 600;
@@ -274,14 +366,16 @@
             color: var(--text-secondary);
             margin-bottom: 10px;
         }
+
         .preview-img {
             width: 100%;
             max-height: 340px;
             object-fit: contain;
             border-radius: 14px;
             border: 1px solid var(--glass-border);
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
         }
+
         .upload-actions {
             display: flex;
             gap: 12px;
@@ -300,6 +394,7 @@
             align-items: center;
             justify-content: center;
         }
+
         #cameraFeed {
             width: 100%;
             max-height: 420px;
@@ -307,13 +402,24 @@
             display: block;
             border-radius: 18px;
         }
+
         .camera-placeholder {
             text-align: center;
             padding: 60px 24px;
             color: var(--text-secondary);
         }
-        .camera-placeholder .cam-icon { font-size: 3.5rem; margin-bottom: 16px; display: block; opacity: 0.5; }
-        #captureCanvas { display: none; }
+
+        .camera-placeholder .cam-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        #captureCanvas {
+            display: none;
+        }
+
         .camera-controls {
             display: flex;
             gap: 12px;
@@ -321,6 +427,7 @@
             flex-wrap: wrap;
             align-items: center;
         }
+
         .recording-dot {
             width: 10px;
             height: 10px;
@@ -329,8 +436,22 @@
             animation: blink 1s infinite;
             display: none;
         }
-        .recording-dot.show { display: inline-block; }
-        @keyframes blink { 0%,100%{ opacity:1; } 50%{ opacity:0; } }
+
+        .recording-dot.show {
+            display: inline-block;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
 
         /* ---- Loading Spinner ---- */
         .spinner-overlay {
@@ -345,16 +466,26 @@
             flex-direction: column;
             gap: 20px;
         }
-        .spinner-overlay.show { display: flex; }
+
+        .spinner-overlay.show {
+            display: flex;
+        }
+
         .spinner {
             width: 56px;
             height: 56px;
-            border: 3px solid rgba(255,255,255,0.1);
+            border: 3px solid rgba(255, 255, 255, 0.1);
             border-top-color: var(--accent-teal);
             border-radius: 50%;
             animation: spin 0.85s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .spinner-text {
             font-size: 0.95rem;
             color: var(--text-secondary);
@@ -366,16 +497,19 @@
         .results-section {
             margin-top: 32px;
         }
+
         .results-header {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 20px;
         }
+
         .results-header h2 {
             font-size: 1.3rem;
             font-weight: 700;
         }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -386,11 +520,13 @@
             font-weight: 600;
             letter-spacing: 0.05em;
         }
+
         .badge-weed {
             background: rgba(255, 112, 67, 0.18);
             border: 1px solid rgba(255, 112, 67, 0.35);
             color: #ff8a65;
         }
+
         .badge-clear {
             background: rgba(0, 230, 118, 0.15);
             border: 1px solid rgba(0, 230, 118, 0.3);
@@ -402,15 +538,21 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-        @media (max-width: 640px) { .results-grid { grid-template-columns: 1fr; } }
+
+        @media (max-width: 640px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
         .result-image-card {
             grid-column: 1 / -1;
-            background: rgba(0,0,0,0.35);
+            background: rgba(0, 0, 0, 0.35);
             border-radius: 18px;
             border: 1px solid var(--glass-border);
             overflow: hidden;
         }
+
         .result-image-card img {
             width: 100%;
             max-height: 400px;
@@ -425,7 +567,12 @@
             padding: 22px;
             transition: transform 0.2s, border-color 0.2s;
         }
-        .stat-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.2); }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
         .stat-label {
             font-size: 0.78rem;
             font-weight: 600;
@@ -434,6 +581,7 @@
             color: var(--text-secondary);
             margin-bottom: 10px;
         }
+
         .stat-value {
             font-size: 2rem;
             font-weight: 800;
@@ -444,44 +592,93 @@
         }
 
         /* Detection List */
-        .detection-list { list-style: none; }
+        .detection-list {
+            list-style: none;
+        }
+
         .detection-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             animation: fadeInUp 0.4s ease both;
         }
-        .detection-item:last-child { border-bottom: none; }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
+
+        .detection-item:last-child {
+            border-bottom: none;
         }
-        .det-name { font-size: 0.95rem; font-weight: 600; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .det-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
         .det-conf {
             font-size: 0.82rem;
             font-weight: 700;
             padding: 3px 10px;
             border-radius: 50px;
             background: rgba(26, 111, 255, 0.18);
-            border: 1px solid rgba(26,111,255,0.3);
+            border: 1px solid rgba(26, 111, 255, 0.3);
             color: #82b4ff;
         }
-        .det-conf.high { background: rgba(0,230,118,0.15); border-color: rgba(0,230,118,0.3); color: #69f0ae; }
-        .det-conf.med  { background: rgba(255,193,7,0.15); border-color: rgba(255,193,7,0.3); color: #ffd54f; }
-        .det-conf.low  { background: rgba(244,67,54,0.15); border-color: rgba(244,67,54,0.3); color: #ef9a9a; }
+
+        .det-conf.high {
+            background: rgba(0, 230, 118, 0.15);
+            border-color: rgba(0, 230, 118, 0.3);
+            color: #69f0ae;
+        }
+
+        .det-conf.med {
+            background: rgba(255, 193, 7, 0.15);
+            border-color: rgba(255, 193, 7, 0.3);
+            color: #ffd54f;
+        }
+
+        .det-conf.low {
+            background: rgba(244, 67, 54, 0.15);
+            border-color: rgba(244, 67, 54, 0.3);
+            color: #ef9a9a;
+        }
 
         .no-weed-banner {
             text-align: center;
             padding: 32px;
-            background: rgba(0,230,118,0.07);
-            border: 1px solid rgba(0,230,118,0.2);
+            background: rgba(0, 230, 118, 0.07);
+            border: 1px solid rgba(0, 230, 118, 0.2);
             border-radius: 16px;
         }
-        .no-weed-banner .icon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
-        .no-weed-banner h3 { font-size: 1.1rem; color: #69f0ae; font-weight: 700; }
-        .no-weed-banner p { font-size: 0.88rem; color: var(--text-secondary); margin-top: 6px; }
+
+        .no-weed-banner .icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .no-weed-banner h3 {
+            font-size: 1.1rem;
+            color: #69f0ae;
+            font-weight: 700;
+        }
+
+        .no-weed-banner p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
 
         /* ---- Toast ---- */
         .toast {
@@ -497,10 +694,13 @@
             font-weight: 500;
             backdrop-filter: blur(16px);
             z-index: 200;
-            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
         }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
 
         /* ---- Divider ---- */
         .divider {
@@ -511,7 +711,9 @@
             color: var(--text-secondary);
             font-size: 0.82rem;
         }
-        .divider::before, .divider::after {
+
+        .divider::before,
+        .divider::after {
             content: '';
             flex: 1;
             height: 1px;
@@ -526,271 +728,277 @@
             font-size: 0.82rem;
             letter-spacing: 0.04em;
         }
-        .footer span { color: rgba(0,212,255,0.7); font-weight: 600; }
+
+        .footer span {
+            color: rgba(0, 212, 255, 0.7);
+            font-weight: 600;
+        }
     </style>
 </head>
+
 <body>
 
-<!-- Background Orbs -->
-<div class="bg-orbs">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-</div>
-
-<!-- Loading Overlay -->
-<div class="spinner-overlay" id="loadingOverlay">
-    <div class="spinner"></div>
-    <div class="spinner-text">Analyzing image&hellip;</div>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<div class="container">
-
-    <!-- Header -->
-    <header class="header">
-        <div class="logo-icon">🌿</div>
-        <h1>WeedSense AI</h1>
-        <p>Upload a photo or use your camera to detect weeds instantly</p>
-    </header>
-
-    <!-- Mode Tabs -->
-    <div class="mode-tabs" role="tablist">
-        <button class="tab-btn active" id="tab-upload" onclick="switchMode('upload')" role="tab">
-            <span class="tab-icon">📤</span> Upload Image
-        </button>
-        <button class="tab-btn" id="tab-camera" onclick="switchMode('camera')" role="tab">
-            <span class="tab-icon">📷</span> Live Camera
-        </button>
+    <!-- Background Orbs -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
     </div>
 
-    <!-- =================== UPLOAD PANEL =================== -->
-    <div class="glass-card mode-panel active" id="panel-upload">
-        <!-- Drop Zone -->
-        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-            <span class="upload-icon">🖼️</span>
-            <h3>Drop your image here</h3>
-            <p>Supports JPG, PNG, WEBP files up to 20 MB</p>
-            <button class="btn btn-primary" type="button" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">
-                Browse Files
+    <!-- Loading Overlay -->
+    <div class="spinner-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="spinner-text">Analyzing image&hellip;</div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <div class="container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-icon">🌿</div>
+            <h1>WeedSense AI</h1>
+            <p>Upload a photo or use your camera to detect weeds instantly</p>
+        </header>
+
+        <!-- Mode Tabs -->
+        <div class="mode-tabs" role="tablist">
+            <button class="tab-btn active" id="tab-upload" onclick="switchMode('upload')" role="tab">
+                <span class="tab-icon">📤</span> Upload Image
             </button>
-            <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+            <button class="tab-btn" id="tab-camera" onclick="switchMode('camera')" role="tab">
+                <span class="tab-icon">📷</span> Live Camera
+            </button>
         </div>
 
-        <!-- Image Preview -->
-        <div class="preview-wrap" id="previewWrap">
-            <div class="preview-label">Preview</div>
-            <img src="" alt="Preview" id="previewImg" class="preview-img">
-            <div class="upload-actions">
-                <button class="btn btn-success" id="detectBtn" onclick="uploadAndDetect()">
-                    🔍 Detect Weeds
+        <!-- =================== UPLOAD PANEL =================== -->
+        <div class="glass-card mode-panel active" id="panel-upload">
+            <!-- Drop Zone -->
+            <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <span class="upload-icon">🖼️</span>
+                <h3>Drop your image here</h3>
+                <p>Supports JPG, PNG, WEBP files up to 20 MB</p>
+                <button class="btn btn-primary" type="button"
+                    onclick="event.stopPropagation(); document.getElementById('fileInput').click();">
+                    Browse Files
                 </button>
-                <button class="btn btn-ghost" onclick="clearUpload()">
-                    ✕ Clear
+                <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+            </div>
+
+            <!-- Image Preview -->
+            <div class="preview-wrap" id="previewWrap">
+                <div class="preview-label">Preview</div>
+                <img src="" alt="Preview" id="previewImg" class="preview-img">
+                <div class="upload-actions">
+                    <button class="btn btn-success" id="detectBtn" onclick="uploadAndDetect()">
+                        🔍 Detect Weeds
+                    </button>
+                    <button class="btn btn-ghost" onclick="clearUpload()">
+                        ✕ Clear
+                    </button>
+                </div>
+            </div>
+
+            <canvas id="captureCanvas"></canvas>
+        </div>
+
+        <!-- =================== CAMERA PANEL =================== -->
+        <div class="glass-card mode-panel" id="panel-camera">
+            <div class="camera-wrap" id="cameraWrap">
+                <div class="camera-placeholder" id="cameraPlaceholder">
+                    <span class="cam-icon">📷</span>
+                    <p>Your camera feed will appear here</p>
+                </div>
+                <video id="cameraFeed" autoplay playsinline muted style="display:none;"></video>
+            </div>
+            <div class="camera-controls">
+                <button class="btn btn-primary" id="startCamBtn" onclick="startCamera()">
+                    📷 Start Camera
                 </button>
+                <button class="btn btn-success" id="captureBtn" onclick="captureAndDetect()" style="display:none;">
+                    📸 Capture & Detect
+                </button>
+                <button class="btn btn-danger" id="stopCamBtn" onclick="stopCamera()" style="display:none;">
+                    ⏹ Stop Camera
+                </button>
+                <div class="recording-dot" id="recDot"></div>
+                <span id="camStatus" style="color: var(--text-secondary); font-size:0.85rem;"></span>
             </div>
         </div>
 
-        <canvas id="captureCanvas"></canvas>
-    </div>
+        <!-- =================== RESULTS =================== -->
+        <div class="results-section" id="resultsSection" style="display:none;">
+            <div class="divider">Detection Results</div>
 
-    <!-- =================== CAMERA PANEL =================== -->
-    <div class="glass-card mode-panel" id="panel-camera">
-        <div class="camera-wrap" id="cameraWrap">
-            <div class="camera-placeholder" id="cameraPlaceholder">
-                <span class="cam-icon">📷</span>
-                <p>Your camera feed will appear here</p>
+            <div class="results-header">
+                <h2>Analysis Complete</h2>
+                <span class="badge" id="resultBadge"></span>
             </div>
-            <video id="cameraFeed" autoplay playsinline muted style="display:none;"></video>
+
+            <div class="results-grid" id="resultsGrid">
+                <!-- Populated by JS -->
+            </div>
         </div>
-        <div class="camera-controls">
-            <button class="btn btn-primary" id="startCamBtn" onclick="startCamera()">
-                📷 Start Camera
-            </button>
-            <button class="btn btn-success" id="captureBtn" onclick="captureAndDetect()" style="display:none;">
-                📸 Capture & Detect
-            </button>
-            <button class="btn btn-danger" id="stopCamBtn" onclick="stopCamera()" style="display:none;">
-                ⏹ Stop Camera
-            </button>
-            <div class="recording-dot" id="recDot"></div>
-            <span id="camStatus" style="color: var(--text-secondary); font-size:0.85rem;"></span>
-        </div>
+
     </div>
 
-    <!-- =================== RESULTS =================== -->
-    <div class="results-section" id="resultsSection" style="display:none;">
-        <div class="divider">Detection Results</div>
+    <!-- Footer -->
+    <div class="footer">Powered by <span>YOLOv8</span> &bull; WeedSense AI &copy; 2025</div>
 
-        <div class="results-header">
-            <h2>Analysis Complete</h2>
-            <span class="badge" id="resultBadge"></span>
-        </div>
+    <script>
+        /* ============================================================
+           STATE
+           ============================================================ */
+        let selectedFile = null;
+        let stream = null;
 
-        <div class="results-grid" id="resultsGrid">
-            <!-- Populated by JS -->
-        </div>
-    </div>
-
-</div>
-
-<!-- Footer -->
-<div class="footer">Powered by <span>YOLOv8</span> &bull; WeedSense AI &copy; 2025</div>
-
-<script>
-/* ============================================================
-   STATE
-   ============================================================ */
-let selectedFile = null;
-let stream = null;
-
-/* ============================================================
-   TABS
-   ============================================================ */
-function switchMode(mode) {
-    document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('panel-' + mode).classList.add('active');
-    document.getElementById('tab-' + mode).classList.add('active');
-    if (mode === 'upload') stopCamera();
-}
-
-/* ============================================================
-   UPLOAD - Drag & Drop
-   ============================================================ */
-const dropZone = document.getElementById('dropZone');
-
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) setFile(file);
-    else showToast('⚠️ Please drop an image file');
-});
-
-function handleFileSelect(e) {
-    const file = e.target.files[0];
-    if (file) setFile(file);
-}
-
-function setFile(file) {
-    selectedFile = file;
-    const reader = new FileReader();
-    reader.onload = ev => {
-        document.getElementById('previewImg').src = ev.target.result;
-        document.getElementById('previewWrap').classList.add('show');
-    };
-    reader.readAsDataURL(file);
-    showToast('✅ Image loaded — click Detect Weeds');
-}
-
-function clearUpload() {
-    selectedFile = null;
-    document.getElementById('fileInput').value = '';
-    document.getElementById('previewImg').src = '';
-    document.getElementById('previewWrap').classList.remove('show');
-    hideResults();
-}
-
-/* ============================================================
-   UPLOAD - Detection
-   ============================================================ */
-async function uploadAndDetect() {
-    if (!selectedFile) return;
-    showLoading();
-    try {
-        const fd = new FormData();
-        fd.append('image', selectedFile);
-        const res = await fetch('/detect', { method: 'POST', body: fd });
-        const data = await res.json();
-        showLoading(false);
-        renderResults(data);
-    } catch (err) {
-        showLoading(false);
-        showToast('❌ Detection failed. Is the server running?');
-    }
-}
-
-/* ============================================================
-   CAMERA
-   ============================================================ */
-async function startCamera() {
-    try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
-        const video = document.getElementById('cameraFeed');
-        video.srcObject = stream;
-        video.style.display = 'block';
-        document.getElementById('cameraPlaceholder').style.display = 'none';
-        document.getElementById('startCamBtn').style.display = 'none';
-        document.getElementById('captureBtn').style.display = 'inline-flex';
-        document.getElementById('stopCamBtn').style.display = 'inline-flex';
-        document.getElementById('recDot').classList.add('show');
-        document.getElementById('camStatus').textContent = 'Camera active';
-        showToast('📷 Camera started — tap Capture & Detect');
-    } catch (err) {
-        showToast('❌ Cannot access camera: ' + err.message);
-    }
-}
-
-function stopCamera() {
-    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-    const video = document.getElementById('cameraFeed');
-    video.srcObject = null;
-    video.style.display = 'none';
-    document.getElementById('cameraPlaceholder').style.display = 'block';
-    document.getElementById('startCamBtn').style.display = 'inline-flex';
-    document.getElementById('captureBtn').style.display = 'none';
-    document.getElementById('stopCamBtn').style.display = 'none';
-    document.getElementById('recDot').classList.remove('show');
-    document.getElementById('camStatus').textContent = '';
-}
-
-async function captureAndDetect() {
-    const video = document.getElementById('cameraFeed');
-    const canvas = document.getElementById('captureCanvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    canvas.toBlob(async blob => {
-        showLoading();
-        try {
-            const fd = new FormData();
-            fd.append('image', blob, 'capture.jpg');
-            const res = await fetch('/detect', { method: 'POST', body: fd });
-            const data = await res.json();
-            showLoading(false);
-            renderResults(data);
-            switchMode('upload');
-            document.getElementById('previewImg').src = canvas.toDataURL('image/jpeg');
-            document.getElementById('previewWrap').classList.add('show');
-        } catch (err) {
-            showLoading(false);
-            showToast('❌ Detection failed. Is the server running?');
+        /* ============================================================
+           TABS
+           ============================================================ */
+        function switchMode(mode) {
+            document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + mode).classList.add('active');
+            document.getElementById('tab-' + mode).classList.add('active');
+            if (mode === 'upload') stopCamera();
         }
-    }, 'image/jpeg', 0.92);
-}
 
-/* ============================================================
-   RESULTS RENDERING
-   ============================================================ */
-function renderResults(data) {
-    const section = document.getElementById('resultsSection');
-    const grid = document.getElementById('resultsGrid');
-    const badge = document.getElementById('resultBadge');
-    section.style.display = 'block';
-    grid.innerHTML = '';
+        /* ============================================================
+           UPLOAD - Drag & Drop
+           ============================================================ */
+        const dropZone = document.getElementById('dropZone');
 
-    const detections = data.detections || [];
-    const count = detections.length;
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) setFile(file);
+            else showToast('⚠️ Please drop an image file');
+        });
 
-    if (count === 0) {
-        badge.className = 'badge badge-clear';
-        badge.textContent = '✓ No Weeds';
-        grid.innerHTML = `
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) setFile(file);
+        }
+
+        function setFile(file) {
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                document.getElementById('previewImg').src = ev.target.result;
+                document.getElementById('previewWrap').classList.add('show');
+            };
+            reader.readAsDataURL(file);
+            showToast('✅ Image loaded — click Detect Weeds');
+        }
+
+        function clearUpload() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('previewImg').src = '';
+            document.getElementById('previewWrap').classList.remove('show');
+            hideResults();
+        }
+
+        /* ============================================================
+           UPLOAD - Detection
+           ============================================================ */
+        async function uploadAndDetect() {
+            if (!selectedFile) return;
+            showLoading();
+            try {
+                const fd = new FormData();
+                fd.append('image', selectedFile);
+                const res = await fetch('/detect', { method: 'POST', body: fd });
+                const data = await res.json();
+                showLoading(false);
+                renderResults(data);
+            } catch (err) {
+                showLoading(false);
+                showToast('❌ Detection failed. Is the server running?');
+            }
+        }
+
+        /* ============================================================
+           CAMERA
+           ============================================================ */
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+                const video = document.getElementById('cameraFeed');
+                video.srcObject = stream;
+                video.style.display = 'block';
+                document.getElementById('cameraPlaceholder').style.display = 'none';
+                document.getElementById('startCamBtn').style.display = 'none';
+                document.getElementById('captureBtn').style.display = 'inline-flex';
+                document.getElementById('stopCamBtn').style.display = 'inline-flex';
+                document.getElementById('recDot').classList.add('show');
+                document.getElementById('camStatus').textContent = 'Camera active';
+                showToast('📷 Camera started — tap Capture & Detect');
+            } catch (err) {
+                showToast('❌ Cannot access camera: ' + err.message);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+            const video = document.getElementById('cameraFeed');
+            video.srcObject = null;
+            video.style.display = 'none';
+            document.getElementById('cameraPlaceholder').style.display = 'block';
+            document.getElementById('startCamBtn').style.display = 'inline-flex';
+            document.getElementById('captureBtn').style.display = 'none';
+            document.getElementById('stopCamBtn').style.display = 'none';
+            document.getElementById('recDot').classList.remove('show');
+            document.getElementById('camStatus').textContent = '';
+        }
+
+        async function captureAndDetect() {
+            const video = document.getElementById('cameraFeed');
+            const canvas = document.getElementById('captureCanvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.toBlob(async blob => {
+                showLoading();
+                try {
+                    const fd = new FormData();
+                    fd.append('image', blob, 'capture.jpg');
+                    const res = await fetch('/detect', { method: 'POST', body: fd });
+                    const data = await res.json();
+                    showLoading(false);
+                    renderResults(data);
+                    switchMode('upload');
+                    document.getElementById('previewImg').src = canvas.toDataURL('image/jpeg');
+                    document.getElementById('previewWrap').classList.add('show');
+                } catch (err) {
+                    showLoading(false);
+                    showToast('❌ Detection failed. Is the server running?');
+                }
+            }, 'image/jpeg', 0.92);
+        }
+
+        /* ============================================================
+           RESULTS RENDERING
+           ============================================================ */
+        function renderResults(data) {
+            const section = document.getElementById('resultsSection');
+            const grid = document.getElementById('resultsGrid');
+            const badge = document.getElementById('resultBadge');
+            section.style.display = 'block';
+            grid.innerHTML = '';
+
+            const detections = data.detections || [];
+            const count = detections.length;
+
+            if (count === 0) {
+                badge.className = 'badge badge-clear';
+                badge.textContent = '✓ No Weeds';
+                grid.innerHTML = `
             <div style="grid-column:1/-1">
                 <div class="no-weed-banner">
                     <span class="icon">✅</span>
@@ -798,80 +1006,81 @@ function renderResults(data) {
                     <p>The image appears to be clear. No weed species were identified.</p>
                 </div>
             </div>`;
-    } else {
-        badge.className = 'badge badge-weed';
-        badge.textContent = `⚠ ${count} Weed${count > 1 ? 's' : ''} Detected`;
-    }
+            } else {
+                badge.className = 'badge badge-weed';
+                badge.textContent = `⚠ ${count} Weed${count > 1 ? 's' : ''} Detected`;
+            }
 
-    // Annotated result image
-    if (data.result_image) {
-        const imgCard = document.createElement('div');
-        imgCard.className = 'result-image-card';
-        imgCard.innerHTML = `<img src="/${data.result_image}?t=${Date.now()}" alt="Detection result">`;
-        grid.appendChild(imgCard);
-    }
+            // Annotated result image
+            if (data.result_image) {
+                const imgCard = document.createElement('div');
+                imgCard.className = 'result-image-card';
+                imgCard.innerHTML = `<img src="${data.result_image}?t=${Date.now()}" alt="Detection result">`;
+                grid.appendChild(imgCard);
+            }
 
-    if (count > 0) {
-        // Stats
-        const highConf = detections.filter(d => d.confidence >= 0.7);
-        const avgConf = detections.reduce((s, d) => s + d.confidence, 0) / count;
+            if (count > 0) {
+                // Stats
+                const highConf = detections.filter(d => d.confidence >= 0.7);
+                const avgConf = detections.reduce((s, d) => s + d.confidence, 0) / count;
 
-        const s1 = document.createElement('div');
-        s1.className = 'stat-card';
-        s1.innerHTML = `<div class="stat-label">Total Detections</div><div class="stat-value">${count}</div>`;
+                const s1 = document.createElement('div');
+                s1.className = 'stat-card';
+                s1.innerHTML = `<div class="stat-label">Total Detections</div><div class="stat-value">${count}</div>`;
 
-        const s2 = document.createElement('div');
-        s2.className = 'stat-card';
-        s2.innerHTML = `<div class="stat-label">Avg Confidence</div><div class="stat-value">${(avgConf * 100).toFixed(1)}%</div>`;
+                const s2 = document.createElement('div');
+                s2.className = 'stat-card';
+                s2.innerHTML = `<div class="stat-label">Avg Confidence</div><div class="stat-value">${(avgConf * 100).toFixed(1)}%</div>`;
 
-        grid.appendChild(s1);
-        grid.appendChild(s2);
+                grid.appendChild(s1);
+                grid.appendChild(s2);
 
-        // Detection List
-        const listCard = document.createElement('div');
-        listCard.className = 'glass-card';
-        listCard.style = 'grid-column:1/-1;';
-        listCard.innerHTML = `<div class="stat-label" style="margin-bottom:14px;">Detected Species</div>
+                // Detection List
+                const listCard = document.createElement('div');
+                listCard.className = 'glass-card';
+                listCard.style = 'grid-column:1/-1;';
+                listCard.innerHTML = `<div class="stat-label" style="margin-bottom:14px;">Detected Species</div>
             <ul class="detection-list" id="detList"></ul>`;
-        grid.appendChild(listCard);
+                grid.appendChild(listCard);
 
-        const list = listCard.querySelector('#detList');
-        detections.forEach((d, i) => {
-            const confPct = (d.confidence * 100).toFixed(1);
-            let confClass = confPct >= 70 ? 'high' : confPct >= 45 ? 'med' : 'low';
-            const li = document.createElement('li');
-            li.className = 'detection-item';
-            li.style.animationDelay = `${i * 0.07}s`;
-            li.innerHTML = `
+                const list = listCard.querySelector('#detList');
+                detections.forEach((d, i) => {
+                    const confPct = (d.confidence * 100).toFixed(1);
+                    let confClass = confPct >= 70 ? 'high' : confPct >= 45 ? 'med' : 'low';
+                    const li = document.createElement('li');
+                    li.className = 'detection-item';
+                    li.style.animationDelay = `${i * 0.07}s`;
+                    li.innerHTML = `
                 <span class="det-name">🌱 ${d.class_name || ('Class ' + d.class_id)}</span>
                 <span class="det-conf ${confClass}">${confPct}%</span>`;
-            list.appendChild(li);
-        });
-    }
+                    list.appendChild(li);
+                });
+            }
 
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    showToast(`🔎 Detection complete — ${count} weed${count !== 1 ? 's' : ''} found`);
-}
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast(`🔎 Detection complete — ${count} weed${count !== 1 ? 's' : ''} found`);
+        }
 
-function hideResults() {
-    document.getElementById('resultsSection').style.display = 'none';
-}
+        function hideResults() {
+            document.getElementById('resultsSection').style.display = 'none';
+        }
 
-/* ============================================================
-   UTILS
-   ============================================================ */
-function showLoading(show = true) {
-    document.getElementById('loadingOverlay').classList.toggle('show', show);
-}
+        /* ============================================================
+           UTILS
+           ============================================================ */
+        function showLoading(show = true) {
+            document.getElementById('loadingOverlay').classList.toggle('show', show);
+        }
 
-let toastTimer;
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-}
-</script>
+        let toastTimer;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+        }
+    </script>
 </body>
+
 </html>
