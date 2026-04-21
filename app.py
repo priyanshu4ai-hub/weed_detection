@@ -1,10 +1,11 @@
 import logging
 import os
 import uuid
+import gc
 from flask import Flask, render_template, request, jsonify
 from ultralytics import YOLO
 import cv2
-import gdown
+import torch
 
 # Configure logging
 logging.basicConfig(
@@ -13,28 +14,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Reduce torch threads to save memory/CPU overhead
+torch.set_num_threads(1)
+
 app = Flask(__name__)
 
 # ===== CONFIG =====
 UPLOAD_FOLDER = "uploads"
 STATIC_FOLDER = "static"
 MODEL_PATH = "weed_model_v1.pt"
-MODEL_URL = "https://drive.google.com/uc?id=1CgthuUyWPBzPpw-G0TkxH2SKzxUJRWzE"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-# ===== DOWNLOAD MODEL =====
-if not os.path.exists(MODEL_PATH):
-    logger.info("Downloading model from Google Drive...")
-    try:
-        gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
-    except Exception as e:
-        logger.error(f"Failed to download model: {e}")
-
 # ===== LOAD MODEL AT STARTUP =====
 logger.info("Loading YOLO model...")
 try:
+    # Load model and move to CPU explicitly
     model = YOLO(MODEL_PATH)
     logger.info("Model loaded successfully")
 except Exception as e:
@@ -73,17 +69,36 @@ def detect():
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
 
+        # ===== RESIZE IMAGE TO SAVE MEMORY =====
+        # Large images cause OOM during results.plot() and cv2.imwrite()
+        logger.info(f"Checking image size for {filepath}...")
+        img = cv2.imread(filepath)
+        if img is not None:
+            h, w = img.shape[:2]
+            max_dim = 640
+            if max(h, w) > max_dim:
+                logger.info(f"Resizing image from {w}x{h} to max dimension {max_dim}")
+                scale = max_dim / max(h, w)
+                img = cv2.resize(img, (int(w * scale), int(h * scale)))
+                cv2.imwrite(filepath, img)
+            del img
+            gc.collect()
+
         # ===== RUN MODEL =====
         logger.info(f"Running inference on {filepath}...")
-        # Use a small imgsz to save memory on Render
-        results = model(filepath, imgsz=320, device="cpu")
+
+        with torch.no_grad():
+            # imgsz=320 is good for performance/memory on small models
+            results = model.predict(source=filepath, imgsz=320, device="cpu", verbose=False)
+
         logger.info("Inference complete")
 
         # ===== SAVE RESULT IMAGE =====
         out_filename = f"result_{filename}"
         result_path = os.path.join(STATIC_FOLDER, out_filename)
 
-        annotated = results[0].plot()
+        result = results[0]
+        annotated = result.plot()
 
         logger.info(f"Saving annotated image to {result_path}...")
         success = cv2.imwrite(result_path, annotated)
@@ -93,8 +108,8 @@ def detect():
 
         # ===== DETECTIONS =====
         detections = []
-        boxes = results[0].boxes
-        names = results[0].names
+        boxes = result.boxes
+        names = result.names
 
         if boxes is not None:
             for box in boxes:
@@ -103,6 +118,12 @@ def detect():
                     "class_name": names[int(box.cls[0])],
                     "confidence": round(float(box.conf[0]), 4)
                 })
+
+        # ===== CLEANUP =====
+        del results
+        del result
+        del annotated
+        gc.collect()
 
         # Cleanup original upload to save space
         try:
