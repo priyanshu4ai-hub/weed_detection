@@ -1,0 +1,17 @@
+[2026-04-21 19:58:29 +0000] [46452] [INFO] Starting gunicorn 25.3.0
+[2026-04-21 19:58:29 +0000] [46452] [INFO] Listening at: http://0.0.0.0:10000 (46452)
+[2026-04-21 19:58:29 +0000] [46452] [INFO] Using worker: gthread
+[2026-04-21 19:58:29 +0000] [46852] [INFO] Booting worker with pid: 46852
+[2026-04-21 19:58:29 +0000] [46452] [INFO] Control socket listening at /home/jules/.gunicorn/gunicorn.ctl
+Creating new Ultralytics Settings v0.0.6 file ✅
+View Ultralytics Settings with 'yolo settings' or at '/home/jules/.config/Ultralytics/settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+2026-04-21 19:58:35,352 - app - INFO - Loading YOLO model...
+2026-04-21 19:58:35,491 - app - INFO - Model loaded successfully
+2026-04-21 19:58:58,748 - app - INFO - Checking image size for uploads/55ef48fffac54428a3f46adf84ee4105.jpeg...
+2026-04-21 19:58:58,893 - app - INFO - Running inference on uploads/55ef48fffac54428a3f46adf84ee4105.jpeg...
+2026-04-21 19:58:59,009 - app - INFO - Inference complete
+2026-04-21 19:58:59,010 - app - INFO - Saving annotated image to static/result_55ef48fffac54428a3f46adf84ee4105.jpeg...
+[2026-04-21 19:59:06 +0000] [46452] [INFO] Handling signal: term
+[2026-04-21 19:59:06 +0000] [46852] [INFO] Worker exiting (pid: 46852)
+[2026-04-21 19:59:07 +0000] [46452] [INFO] Shutting down: Master
