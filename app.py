@@ -1,9 +1,17 @@
+import logging
+import os
+import uuid
 from flask import Flask, render_template, request, jsonify
 from ultralytics import YOLO
-import os
 import cv2
-import uuid
 import gdown
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -11,47 +19,50 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 STATIC_FOLDER = "static"
 MODEL_PATH = "weed_model_v1.pt"
+MODEL_URL = "https://drive.google.com/uc?id=1CgthuUyWPBzPpw-G0TkxH2SKzxUJRWzE"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(STATIC_FOLDER, exist_ok=True)
 
-# ===== GOOGLE DRIVE MODEL =====
-MODEL_URL = "https://drive.google.com/uc?id=1CgthuUyWPBzPpw-G0TkxH2SKzxUJRWzE"
-
-# Download only once
+# ===== DOWNLOAD MODEL =====
 if not os.path.exists(MODEL_PATH):
-    print("⬇️ Downloading model...")
-    gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
+    logger.info("Downloading model from Google Drive...")
+    try:
+        gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
+    except Exception as e:
+        logger.error(f"Failed to download model: {e}")
 
-# ===== LAZY LOAD MODEL =====
-model = None
-
-def load_model():
-    global model
-    if model is None:
-        print("🚀 Loading YOLO model...")
-        model = YOLO(MODEL_PATH)
-
+# ===== LOAD MODEL AT STARTUP =====
+logger.info("Loading YOLO model...")
+try:
+    model = YOLO(MODEL_PATH)
+    logger.info("Model loaded successfully")
+except Exception as e:
+    logger.error(f"Error loading model: {e}")
+    model = None
 
 # ===== ROUTES =====
 @app.route("/")
 def index():
     return render_template("index.html")
 
+@app.route("/health")
+def health():
+    return jsonify({"status": "healthy", "model_loaded": model is not None})
 
 @app.route("/detect", methods=["POST"])
 def detect():
-    try:
-        # Load model only when needed
-        load_model()
+    if model is None:
+        return jsonify({"error": "Model not loaded. Check server logs."}), 500
 
+    try:
         if "image" not in request.files:
             return jsonify({"error": "No image provided"}), 400
 
         file = request.files["image"]
 
         if file.filename == "" or not file.content_type.startswith("image/"):
-            return jsonify({"error": "Invalid file"}), 400
+            return jsonify({"error": "Invalid file type"}), 400
 
         # ===== SAVE IMAGE =====
         ext = os.path.splitext(file.filename)[1].lower()
@@ -62,8 +73,11 @@ def detect():
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
 
-        # ===== RUN MODEL (OPTIMIZED) =====
+        # ===== RUN MODEL =====
+        logger.info(f"Running inference on {filepath}...")
+        # Use a small imgsz to save memory on Render
         results = model(filepath, imgsz=320, device="cpu")
+        logger.info("Inference complete")
 
         # ===== SAVE RESULT IMAGE =====
         out_filename = f"result_{filename}"
@@ -71,9 +85,11 @@ def detect():
 
         annotated = results[0].plot()
 
+        logger.info(f"Saving annotated image to {result_path}...")
         success = cv2.imwrite(result_path, annotated)
         if not success:
-            raise Exception("Failed to save output image")
+            logger.error(f"Failed to save image to {result_path}")
+            return jsonify({"error": "Failed to save output image"}), 500
 
         # ===== DETECTIONS =====
         detections = []
@@ -85,19 +101,24 @@ def detect():
                 detections.append({
                     "class_id": int(box.cls[0]),
                     "class_name": names[int(box.cls[0])],
-                    "confidence": float(box.conf[0])
+                    "confidence": round(float(box.conf[0]), 4)
                 })
+
+        # Cleanup original upload to save space
+        try:
+            os.remove(filepath)
+        except Exception as e:
+            logger.warning(f"Failed to delete original file {filepath}: {e}")
 
         return jsonify({
             "detections": detections,
             "total": len(detections),
-            "result_image": f"/static/{out_filename}"   # 🔥 FIXED PATH
+            "result_image": f"/static/{out_filename}"
         })
 
     except Exception as e:
-        print("❌ ERROR:", str(e))
+        logger.exception("An error occurred during detection")
         return jsonify({"error": str(e)}), 500
-
 
 # ===== RUN APP =====
 if __name__ == "__main__":
