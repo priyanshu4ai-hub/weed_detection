@@ -2,6 +2,7 @@ import logging
 import os
 import uuid
 import gc
+import numpy as np
 from flask import Flask, render_template, request, jsonify
 from ultralytics import YOLO
 import cv2
@@ -14,8 +15,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Reduce torch threads to save memory/CPU overhead
+# Reduce resource overhead
 torch.set_num_threads(1)
+cv2.setNumThreads(1)
 
 app = Flask(__name__)
 
@@ -32,7 +34,9 @@ logger.info("Loading YOLO model...")
 try:
     # Load model and move to CPU explicitly
     model = YOLO(MODEL_PATH)
-    logger.info("Model loaded successfully")
+    # Fuse model for faster and lighter inference
+    model.fuse()
+    logger.info("Model loaded and fused successfully")
 except Exception as e:
     logger.error(f"Error loading model: {e}")
     model = None
@@ -56,52 +60,46 @@ def detect():
             return jsonify({"error": "No image provided"}), 400
 
         file = request.files["image"]
-
         if file.filename == "" or not file.content_type.startswith("image/"):
             return jsonify({"error": "Invalid file type"}), 400
 
-        # ===== SAVE IMAGE =====
-        ext = os.path.splitext(file.filename)[1].lower()
-        if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
-            ext = ".jpg"
+        # ===== READ & PREPROCESS IMAGE IN MEMORY =====
+        # Read file into numpy array directly to avoid double disk I/O
+        file_bytes = np.frombuffer(file.read(), np.uint8)
+        img = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        if img is None:
+            return jsonify({"error": "Failed to decode image"}), 400
 
-        filename = f"{uuid.uuid4().hex}{ext}"
-        filepath = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(filepath)
+        h, w = img.shape[:2]
+        # Aggressive resizing to save memory (max 480px for visualization, 320 for inference)
+        max_dim = 480
+        if max(h, w) > max_dim:
+            logger.info(f"Resizing image from {w}x{h} to max dimension {max_dim}")
+            scale = max_dim / max(h, w)
+            img = cv2.resize(img, (int(w * scale), int(h * scale)))
 
-        # ===== RESIZE IMAGE TO SAVE MEMORY =====
-        # Large images cause OOM during results.plot() and cv2.imwrite()
-        logger.info(f"Checking image size for {filepath}...")
-        img = cv2.imread(filepath)
-        if img is not None:
-            h, w = img.shape[:2]
-            max_dim = 640
-            if max(h, w) > max_dim:
-                logger.info(f"Resizing image from {w}x{h} to max dimension {max_dim}")
-                scale = max_dim / max(h, w)
-                img = cv2.resize(img, (int(w * scale), int(h * scale)))
-                cv2.imwrite(filepath, img)
-            del img
-            gc.collect()
+        # Free up the raw bytes
+        del file_bytes
+        gc.collect()
 
         # ===== RUN MODEL =====
-        logger.info(f"Running inference on {filepath}...")
-
-        with torch.no_grad():
-            # imgsz=320 is good for performance/memory on small models
-            results = model.predict(source=filepath, imgsz=320, device="cpu", verbose=False)
+        logger.info("Running inference...")
+        with torch.inference_mode():
+            # imgsz=320 is very memory efficient. Pass the image array directly.
+            results = model.predict(source=img, imgsz=320, device="cpu", verbose=False)
 
         logger.info("Inference complete")
 
         # ===== SAVE RESULT IMAGE =====
-        out_filename = f"result_{filename}"
+        out_filename = f"result_{uuid.uuid4().hex}.jpg"
         result_path = os.path.join(STATIC_FOLDER, out_filename)
 
         result = results[0]
         annotated = result.plot()
 
         logger.info(f"Saving annotated image to {result_path}...")
-        success = cv2.imwrite(result_path, annotated)
+        # Use slightly higher compression for JPG to save space/RAM
+        success = cv2.imwrite(result_path, annotated, [int(cv2.IMWRITE_JPEG_QUALITY), 85])
         if not success:
             logger.error(f"Failed to save image to {result_path}")
             return jsonify({"error": "Failed to save output image"}), 500
@@ -123,13 +121,8 @@ def detect():
         del results
         del result
         del annotated
+        del img
         gc.collect()
-
-        # Cleanup original upload to save space
-        try:
-            os.remove(filepath)
-        except Exception as e:
-            logger.warning(f"Failed to delete original file {filepath}: {e}")
 
         return jsonify({
             "detections": detections,
