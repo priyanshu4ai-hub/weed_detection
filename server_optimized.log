@@ -1,0 +1,15 @@
+[2026-04-21 21:09:11 +0000] [111284] [INFO] Starting gunicorn 25.3.0
+[2026-04-21 21:09:11 +0000] [111284] [INFO] Listening at: http://0.0.0.0:10000 (111284)
+[2026-04-21 21:09:11 +0000] [111284] [INFO] Using worker: gthread
+[2026-04-21 21:09:11 +0000] [111905] [INFO] Booting worker with pid: 111905
+[2026-04-21 21:09:11 +0000] [111284] [INFO] Control socket listening at /home/jules/.gunicorn/gunicorn.ctl
+2026-04-21 21:09:29,648 - app - INFO - Loading YOLO model...
+Model summary (fused): 73 layers, 3,006,038 parameters, 0 gradients, 8.1 GFLOPs
+2026-04-21 21:09:32,469 - app - INFO - Model loaded and fused successfully
+2026-04-21 21:09:55,852 - app - INFO - Resizing image from 512x512 to max dimension 480
+2026-04-21 21:09:56,136 - app - INFO - Running inference...
+2026-04-21 21:09:56,373 - app - INFO - Inference complete
+2026-04-21 21:09:56,378 - app - INFO - Saving annotated image to static/result_b25d418ee33c4d468372e4b75025f425.jpg...
+[2026-04-21 21:10:06 +0000] [111284] [INFO] Handling signal: term
+[2026-04-21 21:10:06 +0000] [111905] [INFO] Worker exiting (pid: 111905)
+[2026-04-21 21:10:07 +0000] [111284] [INFO] Shutting down: Master
