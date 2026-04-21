@@ -914,12 +914,20 @@
                 const fd = new FormData();
                 fd.append('image', selectedFile);
                 const res = await fetch('/detect', { method: 'POST', body: fd });
+
+                if (!res.ok) {
+                    const errBody = await res.text();
+                    console.error('Detection failed:', res.status, errBody);
+                    throw new Error(res.status === 413 ? 'Image too large' : `Server error (${res.status})`);
+                }
+
                 const data = await res.json();
                 showLoading(false);
                 renderResults(data);
             } catch (err) {
                 showLoading(false);
-                showToast('❌ Detection failed. Is the server running?');
+                console.error(err);
+                showToast(`❌ ${err.message || 'Detection failed'}`);
             }
         }
 
@@ -969,6 +977,13 @@
                     const fd = new FormData();
                     fd.append('image', blob, 'capture.jpg');
                     const res = await fetch('/detect', { method: 'POST', body: fd });
+
+                    if (!res.ok) {
+                        const errBody = await res.text();
+                        console.error('Detection failed:', res.status, errBody);
+                        throw new Error(`Server error (${res.status})`);
+                    }
+
                     const data = await res.json();
                     showLoading(false);
                     renderResults(data);
@@ -977,7 +992,8 @@
                     document.getElementById('previewWrap').classList.add('show');
                 } catch (err) {
                     showLoading(false);
-                    showToast('❌ Detection failed. Is the server running?');
+                    console.error(err);
+                    showToast(`❌ ${err.message || 'Detection failed'}`);
                 }
             }, 'image/jpeg', 0.92);
         }
